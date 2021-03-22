@@ -3,14 +3,11 @@
 
 import os
 import psutil
-import json
-import paho.mqtt.client as mqtt
-import time
 
 """
 rpi-stats.py
 
-Program to gather stats, format in a JSON string and send to Mosquitto
+Program to gather stats, format and print on the screen
 """
 def main():
     # collect OS stats
@@ -33,28 +30,7 @@ def main():
         "temp": temp
     }
 
-    # Create a JSON string from the disctionary object
-    stats_json = json.dumps(stats_dict)
-    #print(stats_json)
-
-    # Publish MQTT message
-    mqtt.Client.connected_flag=False
-    broker="192.168.12.27"
-
-    client = mqtt.Client("rpi_stats_mqtt") # Create a MQTT client object
-    client.username_pw_set(username="kintzel_mqtt",password="Bl00d$ucker")
-    client.on_connect=on_connect  #bind call back function
-    client.loop_start()  #Start loop
-    #print("Connecting to broker ", broker)
-
-    client.connect(broker,port=1883,keepalive=60,bind_address="")
-    while not client.connected_flag:
-        time.sleep(1)
-
-    client.publish("rpi-stats", stats_json)
-
-    client.loop_stop()  #Stop loop
-    client.disconnect()
+    print(stats_dict)
 
 
 
@@ -81,13 +57,6 @@ def get_cpu_temp():
     # Give the result back to the caller.
     return result
 
-
-def on_connect(client, userdata, flags, rc):
-    if rc==0:
-        client.connected_flag=True
-        #print("connected OK Returned code=",rc)
-    #else:
-        #print("Bad connection Returned code=", rc)
 
 
 if __name__ == "__main__":
